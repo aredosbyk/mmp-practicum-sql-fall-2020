@@ -32,6 +32,9 @@ jobs:
     - name: Initialize database
       run: mysql -uroot -proot < ./data/trjudge.sql
 
+    - name: Optimize database
+      run: echo "OPTIMIZE TABLE cd_customers, account_periods, calendar;" | mysql -uroot -proot srcdt
+
     - name: Installing MySQLdb and multiset
       run: |
         sudo apt install libmysqlclient-dev
