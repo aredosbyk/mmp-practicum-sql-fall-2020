@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 exit_code = 0
-MAX_WORKERS = 5
+MAX_WORKERS = 4
 
 def create_new_connection():
     return MySQLdb.connect(host = "localhost",
