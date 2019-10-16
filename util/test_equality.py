@@ -5,16 +5,39 @@ import os
 import re
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 exit_code = 0
+MAX_WORKERS = 5
 
-def get_sql_result(connection, sql_query):
+def create_new_connection():
+    return MySQLdb.connect(host = "localhost",
+                           user = "root",
+                           passwd = "root",
+                           db = "srcdt",
+                           charset = "utf8")
+
+
+def get_sql_result(sql_query):
+    connection = create_new_connection()
     cursor = connection.cursor()
     cursor.execute(sql_query)
     row = cursor.fetchall()
     cursor.close()
+    connection.close()
     return row
+
+
+def get_sql_result_verbosed(sql_query, filename):
+    print(f"Fetching {filename}...")
+    sys.stdout.flush()
+    start_time = time.perf_counter()
+    result = get_sql_result(sql_query)
+    end_time = time.perf_counter()
+    print(f"Fetched {filename}. Time: {end_time - start_time} s")
+    sys.stdout.flush()
+    return result
 
 
 class TaskInfo:
@@ -53,7 +76,7 @@ class TaskInfo:
             return first_row
         return []
 
-    def test(self, connection, verbose=1):
+    def test(self):
         success = True
         if self.skip:
             return success
@@ -65,23 +88,44 @@ class TaskInfo:
                 sql_queries.append("".join(f.readlines()).replace(';', ''))
 
         groups = {}
-        for sql_query, filename in zip(sql_queries, files):
-            print(f"Fetching {filename}", end=" ")
-            sys.stdout.flush()
-            start_time = time.perf_counter()
-            try:
-                result = get_sql_result(connection, sql_query)
-                if not self.ordered:
-                    result = frozenset(result)
-            except Exception as e:
-                print(f"{filename} -> Exception: {e}")
-                success = False 
-            else:
-                filenames = groups.get(result, [])
-                filenames.append(filename)
-                groups[result] = filenames
-            end_time = time.perf_counter()
-            print(f"Time: {end_time - start_time} s")
+        queries = {}
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            for sql_query, filename in zip(sql_queries, files):
+                while len(queries) >= 2 * MAX_WORKERS:
+                    for completed_query in as_completed(queries):
+                        break
+                    cur_filename = queries[completed_query]
+                    try:
+                        result = completed_query.result()
+                        if not self.ordered:
+                            result = frozenset(result)
+                    except Exception as e:
+                        print(f"{cur_filename} -> Exception: {e}")
+                        success = False 
+                    else:
+                        filenames = groups.get(result, [])
+                        filenames.append(cur_filename)
+                        groups[result] = filenames
+                    del queries[completed_query]
+                future_query = executor.submit(get_sql_result_verbosed, sql_query, filename)
+                queries[future_query] = filename
+
+            while len(queries) > 0:
+                for completed_query in as_completed(queries):
+                    break
+                cur_filename = queries[completed_query]
+                try:
+                    result = completed_query.result()
+                    if not self.ordered:
+                        result = frozenset(result)
+                except Exception as e:
+                    print(f"{cur_filename} -> Exception: {e}")
+                    success = False 
+                else:
+                    filenames = groups.get(result, [])
+                    filenames.append(cur_filename)
+                    groups[result] = filenames
+                del queries[completed_query]
         
         if len(groups) > 0:
             print("-" * 25)
@@ -128,13 +172,6 @@ class TaskInfo:
         sys.stdout.flush()
         return success
 
-
-connection = MySQLdb.connect(host = "localhost",
-                             user = "root",
-                             passwd = "root",
-                             db = "srcdt",
-                             charset = "utf8")
-
 tasks = [
     TaskInfo(1, 1, skip=True, ordered=False),
     TaskInfo(1, 2, skip=True, ordered=False),
@@ -154,8 +191,7 @@ tasks = [
 ]
 
 for task in tasks:
-    if not task.test(connection, verbose=1):
+    if not task.test():
         exit_code = 1
 
-connection.close()
 sys.exit(exit_code)
