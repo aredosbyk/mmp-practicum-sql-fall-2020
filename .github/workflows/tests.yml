@@ -38,7 +38,7 @@ jobs:
       run: sleep 10
 
     - name: Initialize database
-      run: echo "quit" | mysql -uroot -proot
+      run: echo "quit" | mysql -uroot -proot --connect-expired-password
 
     - name: Cloning data
       run: |
