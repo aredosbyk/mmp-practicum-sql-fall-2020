@@ -53,6 +53,7 @@ class TaskInfo:
         return []
 
     def test(self, connection, verbose=1):
+    	print("HERE")
         success = True
         if self.skip:
             return success
