@@ -34,7 +34,7 @@ jobs:
         cd
         
     - name: Try mysqld --init-file
-      run: mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
+      run: mysqld --init-file="D:\\a\\mmp-practicum-sql-fall-2019\\mmp-practicum-sql-fall-2019\\reset.sql" --console
         
     - name: Start mysqld
       run: start /b mysqld
