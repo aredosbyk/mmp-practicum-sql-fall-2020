@@ -28,7 +28,7 @@ jobs:
         echo FLUSH PRIVILEGES; >> reset.sql
         start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console --standalone
         sleep 5
-        echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES;SHOW GLOBAL VARIABLES WHERE variable_name = 'max_allowed_packet'; | mysql -uroot -proot --connect-expired-password
+        echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES;SET GLOBAL max_allowed_packet = 16777216; | mysql -uroot -proot --connect-expired-password
 
     - name: Cloning data
       run: |
