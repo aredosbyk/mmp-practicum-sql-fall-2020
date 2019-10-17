@@ -10,7 +10,6 @@ from multiset import FrozenMultiset
 PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 exit_code = 0
 
-
 def get_sql_result(connection, sql_query):
     cursor = connection.cursor()
     cursor.execute(sql_query)
@@ -130,7 +129,10 @@ class TaskInfo:
         sys.stdout.flush()
         return success
 
-
+os.makedirs(os.path.join(PROJECT_DIRECTORY, "util/cached_queries"), mode=0o777, exist_ok=True)
+with open(os.path.join(PROJECT_DIRECTORY, "util/cached_queries/1.txt"), 'w') as f:
+    f.write("Some text")
+sys.exit(0)
 connection = MySQLdb.connect(host = "localhost",
                              user = "root",
                              passwd = "root",
