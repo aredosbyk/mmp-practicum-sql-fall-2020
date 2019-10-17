@@ -26,7 +26,7 @@ jobs:
         mysqld --initialize --console
         echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         echo FLUSH PRIVILEGES; >> reset.sql
-        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
+        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console --standalone
         sleep 5
         echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES; | mysql -uroot -proot --connect-expired-password
 
@@ -37,12 +37,6 @@ jobs:
         cat trjudge_sql_dump_2019.zip.part? > trjudge_sql_dump_2019.zip
         unzip trjudge_sql_dump_2019.zip
         cd ..
-
-    - name: Restart MySQL server
-      run: |
-        sleep 5
-        start /b mysqld --console
-        sleep 5
 
     - name: Initialize database (you need to wait some time for MySQL server to start)
       run: mysql -uroot -proot < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
