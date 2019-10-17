@@ -28,7 +28,10 @@ jobs:
       run: echo "UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root';" > reset.sql
         
     - name: Second echo
-      run: echo "FLUSH PRIVILEGES;" >> reset.sql
+      run: |
+        echo "FLUSH PRIVILEGES;" >> reset.sql
+        cat reset.sql
+        cd
         
     - name: Try mysqld --init-file
       run: mysqld --init-file=reset.sql --console
