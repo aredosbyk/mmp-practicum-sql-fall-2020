@@ -26,7 +26,7 @@ jobs:
         mysqld --initialize --console
         echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         echo FLUSH PRIVILEGES; >> reset.sql
-        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql"
+        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
 
     - name: Cloning data
       run: |
