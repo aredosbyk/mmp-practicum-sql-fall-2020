@@ -21,6 +21,18 @@ jobs:
         git checkout origin/master
         git merge --no-ff %GITHUB_SHA%
 
+    - name: Run MySQL server
+      run: |
+        mysqld --initialize
+        echo "UPDATE mysql.user SET Password=PASSWORD('root') WHERE User='root';" > reset.sql
+        echo "FLUSH PRIVILEGES;" >> reset.sql
+        echo "quit" >> reset.sql
+        mysqld --init-file=reset.sql
+        start /b mysqld
+
+    - name: Initialize database
+      run: echo "quit" | mysql -uroot -proot
+
     - name: Cloning data
       run: |
         git clone https://github.com/CrafterKolyan/mmp-practicum-sql-fall-2019-db-dump.git data
@@ -28,14 +40,6 @@ jobs:
         cat trjudge_sql_dump_2019.zip.part? > trjudge_sql_dump_2019.zip
         unzip trjudge_sql_dump_2019.zip
         cd ..
-
-    - name: Run MySQL server
-      run: |
-        mysqld --initialize
-        start /b mysqld
-
-    - name: Initialize database
-      run: mysql -uroot -proot < ./data/trjudge.sql
 
     - name: Installing MySQLdb and multiset
       run: |
