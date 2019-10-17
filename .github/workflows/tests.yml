@@ -5,7 +5,7 @@ on: [push]
 jobs:
   equality_test:
     name: Equality test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     
     steps:
     - name: Checkout to workspace
