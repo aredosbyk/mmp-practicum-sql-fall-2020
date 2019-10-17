@@ -18,7 +18,7 @@ jobs:
 
     - name: Emulating merge commit to origin/master
       run: |
-        git checkout origin/master
+        git checkout origin/cached-test-master
         git merge --no-ff "$GITHUB_SHA"
 
     - name: Cloning data
@@ -40,3 +40,10 @@ jobs:
 
     - name: Run equality test
       run: util/test_equality.py
+
+    - name: Commit cached queries
+      if: always()
+      run: |
+        git add util/cached_queries
+        git commit -m "[TEST] Cache query results"
+        git push
