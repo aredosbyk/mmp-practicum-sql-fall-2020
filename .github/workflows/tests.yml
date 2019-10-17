@@ -48,7 +48,7 @@ jobs:
         git pull
         git stash pop
         git add util/cached_queries
-        git commit -m "[TEST] Cache query results"
+        git commit -m "[AUTO-TESTS] Cache query results"
 
     - name: Push changes
       if: always()
