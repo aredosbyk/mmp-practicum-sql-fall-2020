@@ -30,7 +30,7 @@ def get_cached_query(file_path, content):
 def set_cached_query(file_path, content, result):
     cached_query = {
         'sql': content,
-        'valid_until': (datetime.datetime.now() + datetime.timedelta(minutes=30)).timestamp(),
+        'valid_until': (datetime.datetime.now() + datetime.timedelta(hours=12)).timestamp(),
         'rows': len(result),
         'hash': hash(result),
         'data': str(result[0]) if len(result) > 0 else ""
