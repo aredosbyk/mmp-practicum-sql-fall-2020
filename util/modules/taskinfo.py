@@ -14,13 +14,14 @@ def get_sql_result(connection, sql_query):
 
 
 class TaskInfo:
-    __slots__ = ['task', 'subtask', 'ordered', 'skip']
+    __slots__ = ['task', 'subtask', 'ordered', 'skip', 'valid_for']
 
-    def __init__(self, task, subtask, skip=False, ordered=False):
+    def __init__(self, task, subtask, skip=False, ordered=False, valid_for=None):
         self.task = task
         self.subtask = subtask
         self.skip = skip
         self.ordered = ordered
+        self.valid_for = valid_for
 
     def get_folder(self):
         project_directory = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -87,7 +88,7 @@ class TaskInfo:
                 print(f"{filename} -> Exception: {e}")
                 success = False
             else:
-                set_cached_query(filename, sql_query, result)
+                set_cached_query(filename, sql_query, result, self.valid_for)
                 key = hash(result)
                 filenames = groups.get(key, [])
                 hash_to_info[key] = {'data': result, 'len': len(result)}
