@@ -2,8 +2,6 @@ import os
 import datetime
 import json
 
-LINES_TO_SAVE = 50
-
 PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CACHE_DIRECTORY = os.path.join(PROJECT_DIRECTORY, "util/cached_queries")
 os.makedirs(CACHE_DIRECTORY, mode=0o777, exist_ok=True)
@@ -35,7 +33,7 @@ def set_cached_query(file_path, content, result):
         'valid_until': (datetime.datetime.now() + datetime.timedelta(minutes=30)).timestamp(),
         'rows': len(result),
         'hash': hash(result),
-        'data': result[:LINES_TO_SAVE]
+        'data': [str(result[0]) if len(result) > 0 else ""]
     }
     full_path = get_cached_query_file_path(file_path)
     json.dump(cached_query, open(full_path, 'w', encoding='utf-8'))
