@@ -1,6 +1,7 @@
 import os
 import datetime
 import json
+import pytz
 
 PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CACHE_DIRECTORY = os.path.join(PROJECT_DIRECTORY, "util/cached_queries")
@@ -13,6 +14,11 @@ def get_cached_query_file_path(file_path):
     return full_path
 
 
+def get_current_msk_time():
+    msk_timezone = pytz.timezone('Europe/Moscow')
+    return datetime.datetime.now(msk_timezone)
+
+
 def get_cached_query(file_path, content):
     if not file_path.endswith(".sql"):
         return {}
@@ -21,16 +27,23 @@ def get_cached_query(file_path, content):
         return {}
     cached_query = json.load(open(full_path))
     valid_until = datetime.datetime.fromtimestamp(cached_query['valid_until'])
-    if valid_until < datetime.datetime.now() or cached_query['sql'] != content:
+    if valid_until < get_current_msk_time() or cached_query['sql'] != content:
         os.remove(full_path)
         return {}
     cached_query['data'] = ((cached_query['data'],),)
     return cached_query
 
-def set_cached_query(file_path, content, result):
+
+def set_cached_query(file_path, content, result, valid_for=None):
+    if valid_for == 'day':
+        valid_until = get_current_msk_time() + datetime.timedelta(days=1)
+        valid_until = datetime.datetime.combine(valid_until.date(), datetime.time.min)
+        valid_until += datetime.timedelta(minutes=5)
+    else:
+        valid_until = datetime.datetime.max
     cached_query = {
         'sql': content,
-        'valid_until': (datetime.datetime.now() + datetime.timedelta(hours=12)).timestamp(),
+        'valid_until': valid_until.timestamp(),
         'rows': len(result),
         'hash': hash(result),
         'data': str(result[0]) if len(result) > 0 else ""
