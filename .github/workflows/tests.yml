@@ -47,5 +47,5 @@ jobs:
         git add util/cached_queries
         git commit -m "[AUTO-TESTS] Cache query results"
         git fetch -p
-        git rebase origin/cached-test
+        git rebase origin/cached-test --merge --strategy-option=ours
         git push
