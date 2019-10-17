@@ -22,17 +22,11 @@ jobs:
         git merge --no-ff %GITHUB_SHA%
 
     - name: Run MySQL server
-      run: mysqld --initialize --console
-
-    - name: First echo
-      run: echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
-        
-    - name: Second echo
       run: |
+        mysqld --initialize --console
+        echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         echo FLUSH PRIVILEGES; >> reset.sql
-        
-    - name: Try mysqld --init-file
-      run: start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql"
+        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql"
 
     - name: Sleep for 10 seconds
       run: sleep 10
