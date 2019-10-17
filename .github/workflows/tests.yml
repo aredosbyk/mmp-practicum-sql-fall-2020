@@ -30,7 +30,9 @@ jobs:
         cd ..
 
     - name: Run MySQL server
-      run: mysqld --initialize
+      run: |
+        mysqld --initialize
+        mysqld
 
     - name: Initialize database
       run: mysql -uroot -proot < ./data/trjudge.sql
