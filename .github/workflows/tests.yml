@@ -34,6 +34,9 @@ jobs:
     - name: Try mysqld --init-file
       run: start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
 
+    - name: Sleep for 2 seconds
+      run: timeout /t 2 /nobreak > nul
+
     - name: Initialize database
       run: echo "quit" | mysql -uroot -proot
 
