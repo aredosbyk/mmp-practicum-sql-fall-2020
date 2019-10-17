@@ -5,12 +5,12 @@ import sys
 from modules.taskinfo import TaskInfo
 
 exit_code = 0
-
-connection = MySQLdb.connect(host = "localhost",
-                             user = "root",
-                             passwd = "root",
-                             db = "srcdt",
-                             charset = "utf8")
+connection = None
+# connection = MySQLdb.connect(host = "localhost",
+#                              user = "root",
+#                              passwd = "root",
+#                              db = "srcdt",
+#                              charset = "utf8")
 
 tasks = [
     TaskInfo(1, 1, skip=True, ordered=False),
@@ -34,5 +34,5 @@ for task in tasks:
     if not task.test(connection, verbose=1):
         exit_code = 1
 
-connection.close()
+# connection.close()
 sys.exit(exit_code)

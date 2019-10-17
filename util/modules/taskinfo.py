@@ -3,7 +3,7 @@ import os
 import time
 import sys
 from multiset import FrozenMultiset
-from cache_manager import *
+from .cache_manager import *
 
 def get_sql_result(connection, sql_query):
     cursor = connection.cursor()
@@ -51,7 +51,6 @@ class TaskInfo:
         return []
 
     def test(self, connection, verbose=1):
-        print("HERE")
         success = True
         if self.skip:
             return success
@@ -63,22 +62,37 @@ class TaskInfo:
                 sql_queries.append("".join(f.readlines()).replace(';', ''))
 
         groups = {}
+        hash_to_data = {}
         for sql_query, filename in zip(sql_queries, files):
+            result = get_cached_query(filename, sql_query)
+            if result:
+                print(f"Using cached {filename}")
+                key = result['hash']
+                filenames = groups.get(key, [])
+                filenames.append(filename)
+                groups[key] = filenames
+
+                if hash_to_data.get(key, None) is None:
+                    hash_to_data[key] = result['data']
+                continue
             print(f"Fetching {filename}", end=" ")
             sys.stdout.flush()
             start_time = time.perf_counter()
             try:
                 result = get_sql_result(connection, sql_query)
                 if not self.ordered:
-                    result = FrozenMultiset(result)
+                    result = tuple(sorted(result))
+                    print(result)
             except Exception as e:
                 print(f"{filename} -> Exception: {e}")
-                success = False 
+                success = False
             else:
                 set_cached_query(filename, sql_query, result)
-                filenames = groups.get(result, [])
+                key = hash(result)
+                filenames = groups.get(key, [])
+                hash_to_data[key] = result
                 filenames.append(filename)
-                groups[result] = filenames
+                groups[key] = filenames
             end_time = time.perf_counter()
             print(f"Time: {end_time - start_time} s")
         
@@ -88,37 +102,14 @@ class TaskInfo:
             success = False
             print(f"{self.task}.{self.subtask} -> ERROR!")
             for group_num, x in enumerate(groups):
+                x = hash_to_data[x]
                 first_row = self.get_first_row(x)
                 print(f"Group {group_num + 1} ({len(x)} rows, first row: {list(first_row)}):")
                 for user in groups[x]:
                     print(f"\t{user[:user.find('_')]}")
-            print()
-            print("Differences between groups:")
-            for i, group1 in enumerate(groups):
-                if self.ordered:
-                    group1 = FrozenMultiset(group1)
-                for j, group2 in enumerate(groups):
-                    if j <= i:
-                        continue
-                    if self.ordered:
-                        group2 = FrozenMultiset(group2)
-                    common_lines = group1.intersection(group2)
-                    group1_only = group1.difference(common_lines)
-                    group2_only = group2.difference(common_lines)
-                    group1_example = []
-                    group2_example = []
-                    for group1_example in sorted(group1_only):
-                        break
-                    for group2_example in sorted(group2_only):
-                        break
-                    print(f"Group {i + 1} vs Group {j + 1}:")
-                    print(f"\tCommon rows: {len(common_lines)} rows")
-                    print(f"\tGroup {i + 1} only: {len(group1_only)} rows, first row: {list(group1_example)}")
-                    print(f"\tGroup {j + 1} only: {len(group2_only)} rows, first row: {list(group2_example)}")
-                    if self.ordered and len(group1_only) == 0 and len(group2_only) == 0:
-                        print(f"\tOrder differs")
         elif len(groups) == 1:
             for x in groups:
+                x = hash_to_data[x]
                 first_row = self.get_first_row(x)
                 break
             print(f"{self.task}.{self.subtask} -> OK ({len(x)} rows, first row: {list(first_row)})")
