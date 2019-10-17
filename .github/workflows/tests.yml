@@ -41,11 +41,17 @@ jobs:
     - name: Run equality test
       run: util/test_equality.py
 
-    - name: Commit and push cached queries
+    - name: Commit cached queries
       if: always()
       run: |
         git add util/cached_queries
         git commit -m "[AUTO-TESTS] Cache query results"
         git fetch -p
         git rebase origin/cached-test --merge --strategy-option=ours
-        git push
+
+    - name: Push changes
+      if: always()
+      uses: ad-m/github-push-action@master
+      with:
+        branch: cached-test
+        github_token: ${{ secrets.GITHUB_TOKEN }}
