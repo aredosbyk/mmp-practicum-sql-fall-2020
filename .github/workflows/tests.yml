@@ -44,6 +44,9 @@ jobs:
     - name: Commit cached queries
       if: always()
       run: |
+        git stash
+        git pull
+        git stash pop
         git add util/cached_queries
         git commit -m "[TEST] Cache query results"
 
