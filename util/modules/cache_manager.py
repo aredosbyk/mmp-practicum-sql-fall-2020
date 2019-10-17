@@ -9,7 +9,6 @@ os.makedirs(CACHE_DIRECTORY, mode=0o777, exist_ok=True)
 
 def get_cached_query_file_path(file_path):
     file_path = os.path.basename(file_path)[:-4]
-    print(file_path)
     full_path = os.path.join(CACHE_DIRECTORY, f"{file_path}.json")
     return full_path
 
