@@ -22,7 +22,7 @@ jobs:
         git merge --no-ff %GITHUB_SHA%
 
     - name: Run MySQL server
-      run: mysqld --initialize
+      run: mysqld --initialize --console
 
     - name: First echo
       run: echo "UPDATE mysql.user SET Password=PASSWORD('root') WHERE User='root';" > reset.sql
