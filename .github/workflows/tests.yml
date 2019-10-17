@@ -44,11 +44,10 @@ jobs:
     - name: Commit cached queries
       if: always()
       run: |
-        git stash
-        git pull --ff-only
-        git stash pop
         git add util/cached_queries
         git commit -m "[AUTO-TESTS] Cache query results"
+        git fetch -p
+        git rebase origin/cached-test
 
     - name: Push changes
       if: always()
