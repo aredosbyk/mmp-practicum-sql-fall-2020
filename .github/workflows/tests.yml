@@ -29,6 +29,9 @@ jobs:
         unzip trjudge_sql_dump_2019.zip
         cd ..
 
+    - name: Run MySQL server
+      run: mysqld
+
     - name: Initialize database
       run: mysql -uroot -proot < ./data/trjudge.sql
 
