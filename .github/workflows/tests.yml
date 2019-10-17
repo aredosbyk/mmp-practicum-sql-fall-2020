@@ -45,7 +45,7 @@ jobs:
         sleep 5
 
     - name: Initialize database (you need to wait some time for MySQL server to start)
-      run: mysql -uroot -proot --connect-expired-password < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
+      run: mysql -uroot -proot < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
 
     - name: Installing MySQLdb and multiset
       run: |
