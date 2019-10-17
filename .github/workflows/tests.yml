@@ -26,7 +26,6 @@ jobs:
         mysqld --initialize
         echo "UPDATE mysql.user SET Password=PASSWORD('root') WHERE User='root';" > reset.sql
         echo "FLUSH PRIVILEGES;" >> reset.sql
-        echo "quit" >> reset.sql
         mysqld --init-file=reset.sql
         start /b mysqld
 
