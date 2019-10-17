@@ -26,7 +26,7 @@ jobs:
         mysqld --initialize --console
         echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         echo FLUSH PRIVILEGES; >> reset.sql
-        mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console --standalone
+        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console --standalone
         sleep 5
         echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES; | mysql -uroot -proot --connect-expired-password
 
@@ -39,7 +39,10 @@ jobs:
         cd ..
 
     - name: Initialize database (you need to wait some time for MySQL server to start)
-      run: mysql -uroot -proot < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
+      run: |
+        start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console --standalone
+        sleep 5
+        mysql -uroot -proot < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
 
     - name: Installing MySQLdb and multiset
       run: |
