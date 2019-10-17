@@ -31,7 +31,7 @@ jobs:
       run: echo "FLUSH PRIVILEGES;" >> reset.sql
         
     - name: Try mysqld --init-file
-      run: mysqld --defaults-file="C:\Program Files\MySQL\MySQL Server 5.7\my.ini" --init-file=reset.sql
+      run: mysqld --init-file=./reset.sql --console
         
     - name: Start mysqld
       run: start /b mysqld
