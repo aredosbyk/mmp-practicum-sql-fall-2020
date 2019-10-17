@@ -38,7 +38,7 @@ jobs:
 
     - name: Initialize database (you need to wait some time for MySQL server to start) (we are using this time to clone data)
       run: |
-        echo SET authentication_string=PASSWORD('root'); | mysql -uroot -proot --connect-expired-password
+        echo SET PASSWORD=PASSWORD('root'); | mysql -uroot -proot --connect-expired-password
         mysql -uroot -proot --connect-expired-password < D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\data\trjudge.sql
 
     - name: Installing MySQLdb and multiset
