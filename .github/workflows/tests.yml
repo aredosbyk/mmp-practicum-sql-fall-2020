@@ -36,7 +36,7 @@ jobs:
         unzip trjudge_sql_dump_2019.zip
         cd ..
 
-    - name: Initialize database (you need to wait some time after for MySQL server to start) (we are using this time to clone data)
+    - name: Initialize database (you need to wait some time for MySQL server to start) (we are using this time to clone data)
       run: mysql -uroot -proot --connect-expired-password < trjudge_sql_dump_2019.sql
 
     - name: Installing MySQLdb and multiset
