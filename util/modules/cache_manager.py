@@ -25,6 +25,7 @@ def get_cached_query(file_path, content):
     if valid_until < datetime.datetime.now() or cached_query['sql'] != content:
         os.remove(full_path)
         return {}
+    cached_query['data'] = ((cached_query['data'],),)
     return cached_query
 
 def set_cached_query(file_path, content, result):
@@ -33,7 +34,7 @@ def set_cached_query(file_path, content, result):
         'valid_until': (datetime.datetime.now() + datetime.timedelta(minutes=30)).timestamp(),
         'rows': len(result),
         'hash': hash(result),
-        'data': [str(result[0]) if len(result) > 0 else ""]
+        'data': str(result[0]) if len(result) > 0 else ""
     }
     full_path = get_cached_query_file_path(file_path)
     json.dump(cached_query, open(full_path, 'w', encoding='utf-8'))

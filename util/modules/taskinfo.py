@@ -62,7 +62,8 @@ class TaskInfo:
                 sql_queries.append("".join(f.readlines()).replace(';', ''))
 
         groups = {}
-        hash_to_data = {}
+        hash_to_info = {}
+
         for sql_query, filename in zip(sql_queries, files):
             result = get_cached_query(filename, sql_query)
             if result:
@@ -72,8 +73,8 @@ class TaskInfo:
                 filenames.append(filename)
                 groups[key] = filenames
 
-                if hash_to_data.get(key, None) is None:
-                    hash_to_data[key] = result['data']
+                if hash_to_info.get(key, None) is None:
+                    hash_to_info[key] = {'data': result['data'], 'len': result['len']}
                 continue
             print(f"Fetching {filename}", end=" ")
             sys.stdout.flush()
@@ -82,7 +83,6 @@ class TaskInfo:
                 result = get_sql_result(connection, sql_query)
                 if not self.ordered:
                     result = tuple(sorted(result))
-                    print(result)
             except Exception as e:
                 print(f"{filename} -> Exception: {e}")
                 success = False
@@ -90,7 +90,7 @@ class TaskInfo:
                 set_cached_query(filename, sql_query, result)
                 key = hash(result)
                 filenames = groups.get(key, [])
-                hash_to_data[key] = result
+                hash_to_info[key] = {'data': result, 'len': len(result)}
                 filenames.append(filename)
                 groups[key] = filenames
             end_time = time.perf_counter()
@@ -102,17 +102,17 @@ class TaskInfo:
             success = False
             print(f"{self.task}.{self.subtask} -> ERROR!")
             for group_num, x in enumerate(groups):
-                x = hash_to_data[x]
-                first_row = self.get_first_row(x)
-                print(f"Group {group_num + 1} ({len(x)} rows, first row: {list(first_row)}):")
+                info = hash_to_info[x]
+                first_row = self.get_first_row(info['data'])
+                print(f"Group {group_num + 1} ({info['len']} rows, first row: {list(first_row)}):")
                 for user in groups[x]:
                     print(f"\t{user[:user.find('_')]}")
         elif len(groups) == 1:
             for x in groups:
-                x = hash_to_data[x]
-                first_row = self.get_first_row(x)
+                info = hash_to_info[x]
+                first_row = self.get_first_row(info['data'])
                 break
-            print(f"{self.task}.{self.subtask} -> OK ({len(x)} rows, first row: {list(first_row)})")
+            print(f"{self.task}.{self.subtask} -> OK ({info['len']} rows, first row: {list(first_row)})")
         if len(groups) > 0:
             print("-" * 25)
         sys.stdout.flush()
