@@ -74,7 +74,7 @@ class TaskInfo:
                 groups[key] = filenames
 
                 if hash_to_info.get(key, None) is None:
-                    hash_to_info[key] = {'data': result['data'], 'len': result['len']}
+                    hash_to_info[key] = {'data': result['data'], 'len': result['rows']}
                 continue
             print(f"Fetching {filename}", end=" ")
             sys.stdout.flush()
