@@ -27,6 +27,8 @@ jobs:
         echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         echo FLUSH PRIVILEGES; >> reset.sql
         start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
+        sleep 5
+        echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES;QUIT | mysql -uroot -proot --connect-expired-password
 
     - name: Cloning data
       run: |
@@ -35,9 +37,6 @@ jobs:
         cat trjudge_sql_dump_2019.zip.part? > trjudge_sql_dump_2019.zip
         unzip trjudge_sql_dump_2019.zip
         cd ..
-
-    - name: Reset MySQL password again
-      run: echo SET PASSWORD=PASSWORD('root');FLUSH PRIVILEGES;QUIT | mysql -uroot -proot --connect-expired-password
 
     - name: Restart MySQL server
       run: |
