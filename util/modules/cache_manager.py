@@ -4,7 +4,7 @@ import json
 
 LINES_TO_SAVE = 50
 
-PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CACHE_DIRECTORY = os.path.join(PROJECT_DIRECTORY, "util/cached_queries")
 os.makedirs(CACHE_DIRECTORY, mode=0o777, exist_ok=True)
 
@@ -34,7 +34,8 @@ def set_cached_query(file_path, content, result):
 		'sql': content,
 		'valid_until': datetime.datetime.now() + timedelta(minutes=30),
 		'rows': len(result),
-		'data': result[:LINES_TO_SAVE]
+		'data_hash': hash(result),
+		'data_{LINES_TO_SAVE}': result[:LINES_TO_SAVE]
 	}
 	full_path = get_cached_query_file_path(file_path)
 	json.dump(cached_query, open(file_path))

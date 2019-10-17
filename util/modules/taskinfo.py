@@ -5,7 +5,7 @@ import sys
 from multiset import FrozenMultiset
 
 
-PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def get_sql_result(connection, sql_query):
@@ -76,6 +76,7 @@ class TaskInfo:
                 print(f"{filename} -> Exception: {e}")
                 success = False 
             else:
+            	set_cached_query(filename, sql_query, result)
                 filenames = groups.get(result, [])
                 filenames.append(filename)
                 groups[result] = filenames
