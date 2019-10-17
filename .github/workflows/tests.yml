@@ -48,6 +48,7 @@ jobs:
         git commit -m "[TEST] Cache query results"
 
     - name: Push changes
+      if: always()
       uses: ad-m/github-push-action@master
       with:
         branch: cached-test
