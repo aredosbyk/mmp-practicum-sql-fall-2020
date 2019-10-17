@@ -46,4 +46,9 @@ jobs:
       run: |
         git add util/cached_queries
         git commit -m "[TEST] Cache query results"
-        git push
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: cached-test-master
+        github_token: ${{ secrets.GITHUB_TOKEN }}
