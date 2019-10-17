@@ -28,12 +28,6 @@ jobs:
         echo FLUSH PRIVILEGES; >> reset.sql
         start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql"
 
-    - name: Sleep for 5 seconds to wait when mysql server is on
-      run: sleep 5
-
-    - name: Initialize database
-      run: echo quit | mysql -uroot -proot --connect-expired-password
-
     - name: Cloning data
       run: |
         git clone https://github.com/CrafterKolyan/mmp-practicum-sql-fall-2019-db-dump.git data
@@ -42,6 +36,9 @@ jobs:
         unzip trjudge_sql_dump_2019.zip
         cd ..
 
+    - name: Initialize database (you need to wait some time after for MySQL server to start) (we are using this time to clone data)
+      run: mysql -uroot -proot --connect-expired-password < trjudge_sql_dump_2019.sql
+
     - name: Installing MySQLdb and multiset
       run: |
         sudo apt install libmysqlclient-dev
@@ -49,4 +46,6 @@ jobs:
         pip3 install mysqlclient multiset
 
     - name: Run equality test
-      run: util/test_equality.py
+      run: |
+        cd util
+        test_equality.py
