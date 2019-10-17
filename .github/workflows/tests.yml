@@ -18,7 +18,7 @@ jobs:
 
     - name: Emulating merge commit to origin/master
       run: |
-        git checkout -t origin/cached-test-master
+        git checkout -t origin/cached-test
         git merge --no-ff "$GITHUB_SHA"
 
     - name: Cloning data
@@ -50,5 +50,5 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        branch: cached-test-master
+        branch: cached-test
         github_token: ${{ secrets.GITHUB_TOKEN }}
