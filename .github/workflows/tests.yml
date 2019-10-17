@@ -25,13 +25,11 @@ jobs:
       run: mysqld --initialize --console
 
     - name: First echo
-      run: echo "UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root';" > reset.sql
+      run: echo UPDATE mysql.user SET authentication_string=PASSWORD('root') WHERE User='root'; > reset.sql
         
     - name: Second echo
       run: |
-        echo "FLUSH PRIVILEGES;" >> reset.sql
-        cat reset.sql
-        cd
+        echo FLUSH PRIVILEGES; >> reset.sql
         
     - name: Try mysqld --init-file
       run: start /b mysqld --init-file="D:\a\mmp-practicum-sql-fall-2019\mmp-practicum-sql-fall-2019\reset.sql" --console
