@@ -5,9 +5,6 @@ import sys
 from multiset import FrozenMultiset
 
 
-PROJECT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
 def get_sql_result(connection, sql_query):
     cursor = connection.cursor()
     cursor.execute(sql_query)
@@ -26,7 +23,8 @@ class TaskInfo:
         self.ordered = ordered
 
     def get_folder(self):
-        return os.path.join(PROJECT_DIRECTORY, f"task{self.task}")
+        project_directory = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return os.path.join(project_directory, f"task{self.task}")
 
     def get_file_regex(self):
         return re.compile(fr"[A-Z][a-z]*_{self.task}_{self.subtask}\.sql")
@@ -53,7 +51,7 @@ class TaskInfo:
         return []
 
     def test(self, connection, verbose=1):
-    	print("HERE")
+        print("HERE")
         success = True
         if self.skip:
             return success
@@ -77,7 +75,7 @@ class TaskInfo:
                 print(f"{filename} -> Exception: {e}")
                 success = False 
             else:
-            	set_cached_query(filename, sql_query, result)
+                set_cached_query(filename, sql_query, result)
                 filenames = groups.get(result, [])
                 filenames.append(filename)
                 groups[result] = filenames
